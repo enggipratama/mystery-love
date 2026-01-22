@@ -108,7 +108,7 @@ const LevelThree: React.FC = () => {
       </div>
 
       <ShinyText
-        text={isGameWon ? "Berhasil Ketemu! ❤️" : "💖 Level 3"}
+        text={isGameWon ? "Yeeyy kamu nemuin aku! ❤️" : "💖 Level 3"}
         speed={2}
         delay={0}
         color="#e60076"

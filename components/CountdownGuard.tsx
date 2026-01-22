@@ -75,30 +75,26 @@ export default function CountdownGuard({
 
   if (blockAccess && timeLeft > 0) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-pink-200 via-rose-100 to-pink-300 text-white z-50">
+      <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
         <div className="w-30 h-30 sm:w-40 sm:h-40">
           <Lottie animationData={cat} loop autoplay />
         </div>
-        <ShinyText
-          text="Please Wait..."
-          speed={2}
-          delay={0}
-          color="#e60076"
-          shineColor="#ffd0e1"
-          spread={120}
-          direction="left"
-          yoyo={false}
-          pauseOnHover={false}
-          disabled={false}
-          className="text-center text-2xl sm:text-4xl font-bold mb-2"
-        />
-        <div className="px-6 py-4 bg-gradient-to-r from-pink-400 via-rose-300 to-pink-500 rounded-2xl shadow-xl text-2xl sm:text-3xl font-mono text-white tracking-wide">
+        <div className="mb-4">
+          <ShinyText
+            text="Tunggu dulu Yaa..."
+            speed={2}
+            color="#e60076"
+            shineColor="#ffd0e1"
+            className="text-center text-2xl sm:text-4xl font-bold mb-2"
+          />
+        </div>
+        <div className="px-6 py-2 bg-gradient-to-r from-pink-400 via-rose-300 to-pink-500 rounded-xl shadow-xl text-2xl sm:text-3xl font-mono text-white tracking-wide">
           {formatTime(timeLeft)}
         </div>
-        <div className="text-pink-600 mt-4 text-sm sm:text-base font-semibold">
+        <div className="text-pink-600 mt-4 text-sm sm:text-base font-semibold bg-white/30 px-4 py-1 rounded-full">
           Hari Spesial: <strong>{getDateText(targetDate)} 🎉</strong>
         </div>
-      </div>
+      </main>
     );
   }
 

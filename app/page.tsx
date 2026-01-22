@@ -8,7 +8,7 @@ import ShinyText from "@/components/ShinyText";
 const HomePage: React.FC = () => {
   const router = useRouter();
   return (
-    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-pink-200">
+    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
       <div className="w-30 h-30 sm:w-40 sm:h-40">
         <Lottie animationData={cat} loop autoplay />
       </div>
