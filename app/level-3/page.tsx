@@ -6,6 +6,12 @@ import Lottie from "lottie-react";
 import cat from "@/public/cat/melet.json";
 import ShinyText from "@/components/ShinyText";
 import Confetti from "react-confetti";
+import {
+  FaChevronCircleUp,
+  FaChevronCircleDown,
+  FaChevronCircleLeft,
+  FaChevronCircleRight,
+} from "react-icons/fa";
 
 const MAZE_LAYOUT = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -84,13 +90,14 @@ const LevelThree: React.FC = () => {
   };
 
   return (
-    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
+    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative px-4">
       <style jsx global>{`
         html,
         body {
           background-color: #fbcce1 !important;
           margin: 0;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
         }
       `}</style>
 
@@ -168,42 +175,50 @@ const LevelThree: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-6 sm:hidden">
-        <div />
-        <button
-          onClick={() => movePlayer(0, -1)}
-          className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
-        >
-          ↑
-        </button>
-        <div />
-        <button
-          onClick={() => movePlayer(-1, 0)}
-          className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
-        >
-          ←
-        </button>
-        <button
-          onClick={() => movePlayer(0, 1)}
-          className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
-        >
-          ↓
-        </button>
-        <button
-          onClick={() => movePlayer(1, 0)}
-          className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
-        >
-          →
-        </button>
-      </div>
+      {/* Mobile control buttons */}
+      {!isGameWon && (
+        <div className="grid grid-cols-3 gap-2 mb-6 sm:hidden">
+          <div />
+          <button
+            onClick={() => movePlayer(0, -1)}
+            className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
+          >
+            <FaChevronCircleUp className="text-pink-400" />
+          </button>
+          <div />
+          <button
+            onClick={() => movePlayer(-1, 0)}
+            className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
+          >
+            <FaChevronCircleLeft className="text-pink-400" />
+          </button>
+          <button
+            onClick={() => movePlayer(0, 1)}
+            className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
+          >
+            <FaChevronCircleDown className="text-pink-400" />
+          </button>
+          <button
+            onClick={() => movePlayer(1, 0)}
+            className="p-4 bg-white/60 rounded-xl shadow active:bg-pink-200"
+          >
+            <FaChevronCircleRight className="text-pink-400" />
+          </button>
+        </div>
+      )}
 
-      <div className="flex gap-4">
-        <button
-          onClick={resetGame}
-          className="px-6 py-2 text-sm font-bold bg-pink-300 hover:bg-pink-400 text-white rounded-xl"
-        >
-          Reset
-        </button>
+      {/* Reset & Continue */}
+      <div className="flex gap-4 flex-wrap justify-center mb-6">
+        {/* Reset selalu muncul */}
+        {isGameWon && (
+          <button
+            onClick={resetGame}
+            className="px-6 py-2 text-sm font-bold bg-pink-400 hover:bg-pink-500 text-white rounded-xl"
+          >
+            Reset
+          </button>
+        )}
+        {/* Continue hanya muncul saat menang */}
         {isGameWon && (
           <button
             onClick={() => router.push("/level-4")}

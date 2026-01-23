@@ -198,7 +198,7 @@ const LevelTwo: React.FC = () => {
       <div className="flex gap-4">
         <button
           onClick={initializeGame}
-          className="px-6 py-3 text-sm font-bold bg-pink-300 text-white rounded-2xl shadow-lg hover:bg-pink-400 active:scale-95 transition-all"
+          className="px-6 py-3 text-sm font-bold bg-pink-400 text-white rounded-2xl shadow-lg hover:bg-pink-500 active:scale-95 transition-all"
         >
           Reset
         </button>

@@ -13,7 +13,7 @@ interface PuzzlePiece {
 }
 
 const GRID_SIZE = 3;
-const TOTAL_PIECES = GRID_SIZE* GRID_SIZE;
+const TOTAL_PIECES = GRID_SIZE * GRID_SIZE;
 const PHOTO_URL = "/images/we.jpeg";
 
 const LevelFour: React.FC = () => {
@@ -36,25 +36,25 @@ const LevelFour: React.FC = () => {
   }, []);
 
   useEffect(() => {
-  const handleResize = () => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  };
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
 
-  handleResize();
-  window.addEventListener("resize", handleResize);
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
-  const timeoutId = setTimeout(() => {
-    shufflePuzzle();
-  }, 0);
+    const timeoutId = setTimeout(() => {
+      shufflePuzzle();
+    }, 0);
 
-  return () => {
-    window.removeEventListener("resize", handleResize);
-    clearTimeout(timeoutId);
-  };
-}, [shufflePuzzle]);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, [shufflePuzzle]);
 
   const handlePieceClick = (index: number) => {
     if (isSolved) return;
@@ -78,15 +78,15 @@ const LevelFour: React.FC = () => {
   return (
     <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] p-4 overflow-hidden relative">
       {isSolved && (
-        <Confetti 
-          width={windowSize.width} 
-          height={windowSize.height} 
-          recycle={false} 
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
           numberOfPieces={500}
         />
       )}
 
-       <div className="w-20 h-20 sm:w-28 sm:h-28 mb-2">
+      <div className="w-20 h-20 sm:w-28 sm:h-28 mb-2">
         <Lottie animationData={cat} loop autoplay />
       </div>
 
@@ -104,14 +104,14 @@ const LevelFour: React.FC = () => {
         className="text-center text-2xl sm:text-4xl font-bold mb-2"
       />
 
-      <p className="text-center text-gray-600 text-xs mb-6 px-4">
-        {isSolved 
-          ? "Kamu berhasil menyatukan kepingan kenangan kita! 😍" 
+      <p className="text-center text-gray-600 text-xs mb-4 px-4">
+        {isSolved
+          ? "Kamu berhasil menyatukan kepingan kenangan kita! 😍"
           : "Klik dua kotak untuk menukar posisinya hingga fotonya benar."}
       </p>
 
-      <div 
-        className="grid gap-1 bg-white p-2 rounded-2xl shadow-2xl border-4 border-white"
+      <div
+        className="grid gap-1 bg-white/40 p-2 rounded-2xl shadow-2xl"
         style={{
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           width: "min(90vw, 350px)",
@@ -120,14 +120,17 @@ const LevelFour: React.FC = () => {
       >
         {pieces.map((piece, index) => {
           const x = (piece.correctPos % GRID_SIZE) * (100 / (GRID_SIZE - 1));
-          const y = Math.floor(piece.correctPos / GRID_SIZE) * (100 / (GRID_SIZE - 1));
+          const y =
+            Math.floor(piece.correctPos / GRID_SIZE) * (100 / (GRID_SIZE - 1));
 
           return (
             <div
               key={piece.id}
               onClick={() => handlePieceClick(index)}
               className={`relative cursor-pointer overflow-hidden rounded-md transition-all duration-300 ${
-                selectedPiece === index ? "ring-4 ring-pink-500 scale-95 z-10" : "hover:opacity-90"
+                selectedPiece === index
+                  ? "ring-4 ring-pink-500 scale-95 z-10"
+                  : "hover:opacity-90"
               } ${isSolved ? "ring-0" : ""}`}
               style={{
                 backgroundImage: `url(${PHOTO_URL})`,
@@ -145,11 +148,10 @@ const LevelFour: React.FC = () => {
         })}
       </div>
 
-      <div className="mt-8 flex gap-4">
-       
+      <div className="mt-4 flex gap-4">
         <button
           onClick={shufflePuzzle}
-          className="px-6 py-2 text-sm font-bold bg-pink-300 hover:bg-pink-400 text-white rounded-xl"
+          className="px-6 py-2 text-sm font-bold bg-pink-400 hover:bg-pink-500 text-white rounded-xl"
         >
           Reset
         </button>
