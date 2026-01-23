@@ -21,7 +21,6 @@ export default function CountdownGuard({
   const router = useRouter();
   const pathname = usePathname();
 
-  // ⏳ Hitung sisa waktu saat mount
   const getRemaining = () =>
     Math.max(0, new Date(targetDate).getTime() - Date.now());
 
@@ -39,7 +38,6 @@ export default function CountdownGuard({
   );
   const [curtainOpening, setCurtainOpening] = useState(false);
 
-  // ⏱ Timer utama
   useEffect(() => {
     if (redirectReady) return;
 
@@ -72,14 +70,12 @@ export default function CountdownGuard({
     return () => clearInterval(interval);
   }, [targetDate, isFinalMode, redirectReady]);
 
-  // ⛔ Paksa user ke halaman utama selama countdown aktif
   useEffect(() => {
     if (blockAccess && !redirectReady && pathname !== "/") {
       router.replace("/");
     }
   }, [blockAccess, redirectReady, pathname, router]);
 
-  // ⏱ Helpers
   const formatTime = (ms: number) => {
     const days = Math.floor(ms / (1000 * 60 * 60 * 24));
     const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -95,11 +91,9 @@ export default function CountdownGuard({
       year: "numeric",
     });
 
-  // 🚫 UI countdown
   if (blockAccess && !redirectReady) {
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#fbcce1] px-4">
-        {/* Tampilan normal (hari-jam-menit-detik) */}
         {!isFinalMode && (
           <div className="relative z-10 flex flex-col items-center justify-center">
             <div className="h-30 w-30 sm:h-40 sm:w-40">
@@ -121,7 +115,6 @@ export default function CountdownGuard({
           </div>
         )}
 
-        {/* 🎭 Tirai */}
         {showCurtain && (
           <div
             className={`fixed inset-0 z-40 bg-[#fbcce1] ${
@@ -130,7 +123,6 @@ export default function CountdownGuard({
           />
         )}
 
-        {/* ❤️ Countdown besar 16 → 1 */}
         {finalSeconds !== null && (
           <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
             <div
@@ -145,6 +137,5 @@ export default function CountdownGuard({
     );
   }
 
-  // ✅ Countdown selesai → tampilkan halaman normal
   return <>{children}</>;
 }
