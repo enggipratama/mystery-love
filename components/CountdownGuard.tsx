@@ -1,59 +1,85 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Lottie from "lottie-react";
+
 import cat from "@/public/cat/count.json";
 import ShinyText from "@/components/ShinyText";
-import Confetti from "react-confetti";
 
 interface Props {
   targetDate: string;
-  redirectTo?: string;
   children?: React.ReactNode;
   blockAccess?: boolean;
 }
 
 export default function CountdownGuard({
   targetDate,
-  redirectTo = "/",
   children,
   blockAccess = true,
 }: Props) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const pathname = usePathname();
 
+  // ⏳ Hitung sisa waktu saat mount
+  const getRemaining = () =>
+    Math.max(0, new Date(targetDate).getTime() - Date.now());
+
+  const [timeLeft, setTimeLeft] = useState(getRemaining);
+  const [redirectReady, setRedirectReady] = useState(getRemaining() === 0);
+  const [isFinalMode, setIsFinalMode] = useState(
+    getRemaining() <= 16 && getRemaining() > 0,
+  );
+  const [finalSeconds, setFinalSeconds] = useState(() => {
+    const r = getRemaining();
+    return r <= 15 && r > 0 ? Math.ceil(r / 1000) : null;
+  });
+  const [showCurtain, setShowCurtain] = useState(
+    getRemaining() <= 15 && getRemaining() > 0,
+  );
+  const [curtainOpening, setCurtainOpening] = useState(false);
+
+  // ⏱ Timer utama
   useEffect(() => {
-    const handle = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(handle);
-  }, []);
-  useEffect(() => {
-    if (!mounted) return;
+    if (redirectReady) return;
 
     const target = new Date(targetDate).getTime();
-
     const interval = setInterval(() => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const distance = Math.max(target - now, 0);
+      const secondsLeft = Math.ceil(distance / 1000);
+
       setTimeLeft(distance);
 
-      if (distance === 0) {
-        setShowConfetti(true);
+      if (secondsLeft <= 16 && secondsLeft > 0 && !isFinalMode) {
+        setIsFinalMode(true);
+        setShowCurtain(true);
+        setFinalSeconds(secondsLeft);
+      }
+
+      if (isFinalMode && secondsLeft > 0 && secondsLeft <= 16) {
+        setFinalSeconds(secondsLeft);
+      }
+
+      if (secondsLeft === 0 && !redirectReady) {
+        setFinalSeconds(null);
+        setCurtainOpening(true);
+
+        setTimeout(() => setRedirectReady(true), 1600);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [mounted, targetDate]);
+  }, [targetDate, isFinalMode, redirectReady]);
 
+  // ⛔ Paksa user ke halaman utama selama countdown aktif
   useEffect(() => {
-    if (!mounted) return;
-    if (blockAccess && timeLeft === 0) {
-      router.replace(redirectTo);
+    if (blockAccess && !redirectReady && pathname !== "/") {
+      router.replace("/");
     }
-  }, [timeLeft, mounted, router, blockAccess, redirectTo]);
+  }, [blockAccess, redirectReady, pathname, router]);
 
+  // ⏱ Helpers
   const formatTime = (ms: number) => {
     const days = Math.floor(ms / (1000 * 60 * 60 * 24));
     const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -61,47 +87,64 @@ export default function CountdownGuard({
     const seconds = Math.floor((ms % (1000 * 60)) / 1000);
     return `${days}D ${hours}H ${minutes}m ${seconds}s`;
   };
-  const getDateText = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
+
+  const getDateText = (dateString: string) =>
+    new Date(dateString).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
-    };
-    return date.toLocaleDateString("id-ID", options);
-  };
+    });
 
-  if (!mounted) return null;
-
-  if (blockAccess && timeLeft > 0) {
+  // 🚫 UI countdown
+  if (blockAccess && !redirectReady) {
     return (
-      <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
-        <div className="w-30 h-30 sm:w-40 sm:h-40">
-          <Lottie animationData={cat} loop autoplay />
-        </div>
-        <div className="mb-4">
-          <ShinyText
-            text="Tunggu dulu Yaa..."
-            speed={2}
-            color="#e60076"
-            shineColor="#ffd0e1"
-            className="text-center text-2xl sm:text-4xl font-bold mb-2"
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#fbcce1] px-4">
+        {/* Tampilan normal (hari-jam-menit-detik) */}
+        {!isFinalMode && (
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="h-30 w-30 sm:h-40 sm:w-40">
+              <Lottie animationData={cat} loop autoplay />
+            </div>
+            <ShinyText
+              text="Tunggu dulu Yaa..."
+              speed={2}
+              color="#e60076"
+              shineColor="#ffd0e1"
+              className="mb-2 text-center text-2xl font-bold sm:text-4xl"
+            />
+            <div className="rounded-xl bg-gradient-to-r from-pink-400 via-rose-300 to-pink-500 px-6 py-2 font-mono text-2xl tracking-wide text-white shadow-xl sm:text-3xl">
+              {formatTime(timeLeft)}
+            </div>
+            <div className="mt-4 rounded-full bg-white/30 px-4 py-1 text-sm font-semibold text-pink-600 sm:text-base">
+              Hari Spesial: <strong>{getDateText(targetDate)} 🎉</strong>
+            </div>
+          </div>
+        )}
+
+        {/* 🎭 Tirai */}
+        {showCurtain && (
+          <div
+            className={`fixed inset-0 z-40 bg-[#fbcce1] ${
+              curtainOpening ? "animate-curtainUp" : "animate-curtainDown"
+            }`}
           />
-        </div>
-        <div className="px-6 py-2 bg-gradient-to-r from-pink-400 via-rose-300 to-pink-500 rounded-xl shadow-xl text-2xl sm:text-3xl font-mono text-white tracking-wide">
-          {formatTime(timeLeft)}
-        </div>
-        <div className="text-pink-600 mt-4 text-sm sm:text-base font-semibold bg-white/30 px-4 py-1 rounded-full">
-          Hari Spesial: <strong>{getDateText(targetDate)} 🎉</strong>
-        </div>
-      </main>
+        )}
+
+        {/* ❤️ Countdown besar 16 → 1 */}
+        {finalSeconds !== null && (
+          <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              key={finalSeconds}
+              className="animate-heartBeat text-8xl font-extrabold text-pink-400 drop-shadow-xl sm:text-9xl"
+            >
+              {finalSeconds}
+            </div>
+          </div>
+        )}
+      </div>
     );
   }
 
-  return (
-    <>
-      {showConfetti && <Confetti numberOfPieces={300} recycle={false} />}
-      {children}
-    </>
-  );
+  // ✅ Countdown selesai → tampilkan halaman normal
+  return <>{children}</>;
 }
