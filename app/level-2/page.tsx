@@ -149,7 +149,7 @@ const LevelTwo: React.FC = () => {
         </div>
 
         <ShinyText
-          text={isGameWon ? "You Won! ❤️" : "💖 Level 2"}
+          text={isGameWon ? "You Won! ❤️" : "💖 Level 2 — The Memory"}
           speed={2}
           delay={0}
           color="#e60076"

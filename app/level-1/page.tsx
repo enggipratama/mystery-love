@@ -98,7 +98,7 @@ export default function LevelOne() {
           </div>
 
           <ShinyText
-            text="💖 Level 1"
+            text="💖 Level 1 — Beginning"
             speed={2}
             delay={0}
             color="#e60076"

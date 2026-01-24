@@ -11,7 +11,6 @@ const HomePage: React.FC = () => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  // 🔹 pastikan Confetti hanya muncul di client tanpa triggering warning
   useEffect(() => {
     const id = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(id);
@@ -19,7 +18,6 @@ const HomePage: React.FC = () => {
 
   return (
     <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
-      {/* Confetti hanya render setelah mount */}
       {mounted && <Confetti numberOfPieces={500} recycle={false} />}
 
       <motion.div

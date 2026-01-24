@@ -12,7 +12,7 @@ export default function Page() {
   const router = useRouter();
   useEffect(() => {
     const completedLevel = getCompletedLevel();
-    if (completedLevel < 5) {
+    if (completedLevel < 7) {
       router.replace(`/level-${completedLevel + 1}`);
     }
   }, [router]);

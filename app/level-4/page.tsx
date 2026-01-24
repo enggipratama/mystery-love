@@ -98,7 +98,7 @@ const LevelFour: React.FC = () => {
       </div>
 
       <ShinyText
-        text={isSolved ? "Pintar banget siii! ❤️" : "💖 Level 4"}
+        text={isSolved ? "Pintar banget siii! ❤️" : "💖 Level 4 — Puzzle"}
         speed={2}
         delay={0}
         color="#e60076"
