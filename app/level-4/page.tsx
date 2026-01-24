@@ -5,6 +5,8 @@ import Lottie from "lottie-react";
 import cat from "@/public/cat/melet.json";
 import ShinyText from "@/components/ShinyText";
 import Confetti from "react-confetti";
+import ProtectedLevel from "@/components/ProtectedLevel";
+import { setLevelCompleted } from "@/utils/progress";
 
 interface PuzzlePiece {
   id: number;
@@ -74,8 +76,13 @@ const LevelFour: React.FC = () => {
       if (solved) setIsSolved(true);
     }
   };
+  const handleSuccess = () => {
+      setLevelCompleted(4);
+      router.push("/level-5");
+    };
 
   return (
+    <ProtectedLevel level={4}>
     <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] p-4 overflow-hidden relative">
       {isSolved && (
         <Confetti
@@ -157,7 +164,7 @@ const LevelFour: React.FC = () => {
         </button>
         {isSolved && (
           <button
-            onClick={() => router.push("/level-5")}
+            onClick={handleSuccess}
             className="px-6 py-2 text-sm font-bold bg-pink-500 hover:bg-pink-600 text-white rounded-xl animate-bounce"
           >
             Continue
@@ -165,6 +172,7 @@ const LevelFour: React.FC = () => {
         )}
       </div>
     </main>
+    </ProtectedLevel>
   );
 };
 

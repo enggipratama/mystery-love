@@ -19,14 +19,12 @@ export default function FlipbookModal({ pages }: Props) {
   const flipBookRef = useRef<HTMLFlipBook>(null);
   const [mounted, setMounted] = useState(false);
 
-  // 🔹 pastikan Confetti hanya muncul di client tanpa triggering warning
   useEffect(() => {
     const id = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(id);
   }, []);
   return (
     <>
-      {/* Tombol untuk membuka modal */}
       <button onClick={() => setIsOpen(true)} className="">
         <div className="w-64 h-64 sm:w-96 sm:h-96">
           <Lottie animationData={gift} loop autoplay />
@@ -35,7 +33,6 @@ export default function FlipbookModal({ pages }: Props) {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-[#fbcce1] bg-opacity-80 p-6">
-          {/* Tombol close */}
           {mounted && <Confetti numberOfPieces={500} recycle={false} />}
           <button
             onClick={() => setIsOpen(false)}
@@ -45,7 +42,6 @@ export default function FlipbookModal({ pages }: Props) {
           </button>
 
           <div className="flex flex-col items-center max-w-3xl mx-auto">
-            {/* GIF dan Text di atas Flipbook */}
             <div className="flex flex-col items-center mb-6">
               <div className="w-32 h-32 sm:w-48 sm:h-48">
                 <Lottie animationData={cake} loop autoplay />
@@ -69,7 +65,6 @@ export default function FlipbookModal({ pages }: Props) {
               &quot;Slide ya sayangg...&quot;
             </p>
 
-            {/* Flipbook */}
             <HTMLFlipBook
               ref={flipBookRef}
               width={500}
@@ -97,7 +92,6 @@ export default function FlipbookModal({ pages }: Props) {
               ))}
             </HTMLFlipBook>
 
-            {/* Card Text */}
             <div className="bg-white p-6 rounded-2xl text-gray-700 shadow-lg border-t-5 border-pink-400 w-full relative mb-10">
               <div className="absolute -top-4 -right-4 w-12 h-12 rotate-12">
                 <Lottie animationData={cat} loop autoplay />

@@ -5,10 +5,18 @@ import Lottie from "lottie-react";
 import cat from "@/public/cat/cat.json";
 import ShinyText from "@/components/ShinyText";
 import Confetti from "react-confetti";
+import { useRouter } from "next/navigation";
+import { getCompletedLevel } from "@/utils/progress";
 
 export default function Page() {
+  const router = useRouter();
+  useEffect(() => {
+    const completedLevel = getCompletedLevel();
+    if (completedLevel < 5) {
+      router.replace(`/level-${completedLevel + 1}`);
+    }
+  }, [router]);
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     const id = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(id);

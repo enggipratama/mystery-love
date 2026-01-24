@@ -12,6 +12,8 @@ import {
   FaChevronCircleLeft,
   FaChevronCircleRight,
 } from "react-icons/fa";
+import ProtectedLevel from "@/components/ProtectedLevel";
+import { setLevelCompleted } from "@/utils/progress";
 
 const MAZE_LAYOUT = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -88,8 +90,12 @@ const LevelThree: React.FC = () => {
     setPlayerPos(START_POS);
     setIsGameWon(false);
   };
-
+  const handleSuccess = () => {
+    setLevelCompleted(3);
+    router.push("/level-4");
+  };
   return (
+    <ProtectedLevel level={3}>
     <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative px-4">
       <style jsx global>{`
         html,
@@ -175,7 +181,6 @@ const LevelThree: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile control buttons */}
       {!isGameWon && (
         <div className="grid grid-cols-3 gap-2 mb-6 sm:hidden">
           <div />
@@ -207,9 +212,7 @@ const LevelThree: React.FC = () => {
         </div>
       )}
 
-      {/* Reset & Continue */}
       <div className="flex gap-4 flex-wrap justify-center mb-6">
-        {/* Reset selalu muncul */}
         {isGameWon && (
           <button
             onClick={resetGame}
@@ -218,10 +221,9 @@ const LevelThree: React.FC = () => {
             Reset
           </button>
         )}
-        {/* Continue hanya muncul saat menang */}
         {isGameWon && (
           <button
-            onClick={() => router.push("/level-4")}
+            onClick={handleSuccess}
             className="px-6 py-2 text-sm font-bold bg-pink-500 hover:bg-pink-600 text-white rounded-xl animate-bounce"
           >
             Continue
@@ -229,6 +231,7 @@ const LevelThree: React.FC = () => {
         )}
       </div>
     </main>
+    </ProtectedLevel>
   );
 };
 
