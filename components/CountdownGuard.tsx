@@ -78,7 +78,11 @@ export default function CountdownGuard({
         setFinalSeconds(null);
         setCurtainOpening(true);
 
-        setTimeout(() => setRedirectReady(true), 1600);
+        setTimeout(() => {
+          setRedirectReady(true);
+          // Emit event when countdown finishes to trigger music autoplay
+          window.dispatchEvent(new CustomEvent('countdownFinished'));
+        }, 1600);
       }
     }, 1000);
 

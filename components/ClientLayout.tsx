@@ -1,7 +1,8 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import Loader from "./Loader";
+import { useLoading } from "@/contexts/LoadingContext";
 
 export default function ClientLayout({
   children,
@@ -9,31 +10,35 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const { setIsLoading } = useLoading();
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    timersRef.current.forEach(t => clearTimeout(t));
+    timersRef.current = [];
 
-  useEffect(() => {
+    setIsLoading(true);
+    
     const timer = setTimeout(() => {
-      setLoading(true);
+      setIsLoading(false);
+    }, 2000);
+    
+    timersRef.current.push(timer);
 
-      const hideTimer = setTimeout(() => {
-        setLoading(false);
-      }, 2000);
-
-      return () => clearTimeout(hideTimer);
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [pathname]);
+    return () => {
+      timersRef.current.forEach(t => clearTimeout(t));
+    };
+  }, [pathname, setIsLoading]);
 
   return (
     <>
-      {loading && <Loader />}
+      <LoaderWrapper />
       {children}
     </>
   );
+}
+
+function LoaderWrapper() {
+  const { isLoading } = useLoading();
+  return isLoading ? <Loader /> : null;
 }

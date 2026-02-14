@@ -5,6 +5,7 @@ import ClientLayout from "@/components/ClientLayout";
 import CountdownGuard from "@/components/CountdownGuard";
 import { TARGET_DATE } from "@/lib/countdown";
 import MusicPlayer from "@/components/MusicPlayer";
+import { LoadingProvider } from "@/contexts/LoadingContext";
 
 const comicRelief = Comic_Relief({
   variable: "--font-comic-relief",
@@ -31,12 +32,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${comicRelief.className} antialiased`}>
-        <ClientLayout>
-          <CountdownGuard targetDate={TARGET_DATE}>
-            <MusicPlayer />
-            {children}
-          </CountdownGuard>
-        </ClientLayout>
+        <LoadingProvider>
+          <ClientLayout>
+            <CountdownGuard targetDate={TARGET_DATE}>
+              <MusicPlayer />
+              {children}
+            </CountdownGuard>
+          </ClientLayout>
+        </LoadingProvider>
       </body>
     </html>
   );
