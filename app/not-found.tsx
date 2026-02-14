@@ -9,7 +9,7 @@ export default function NotFoundPage() {
   const router = useRouter();
 
   return (
-    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
+    <main className="h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
       <div className="w-20 h-20 sm:w-28 sm:h-28 mb-2">
         <Lottie animationData={cat} loop autoplay />
       </div>

@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <main className="min-h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
+    <main className="h-dvh w-full flex flex-col items-center justify-center bg-[#fbcce1] relative overflow-hidden px-4">
       {mounted && <Confetti numberOfPieces={500} recycle={false} />}
 
       <motion.div
@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="flex flex-col items-center"
       >
-        <div className="w-30 h-30 sm:w-40 sm:h-40">
+        <div className="w-28 h-28 sm:w-36 sm:h-36">
           <Lottie animationData={cat} loop autoplay />
         </div>
 

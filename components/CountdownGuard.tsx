@@ -37,6 +37,21 @@ export default function CountdownGuard({
     getRemaining() <= 15 && getRemaining() > 0,
   );
   const [curtainOpening, setCurtainOpening] = useState(false);
+  const [currentTargetDate, setCurrentTargetDate] = useState(targetDate);
+
+  // Monitor target date changes and reset state
+  useEffect(() => {
+    if (targetDate !== currentTargetDate) {
+      setCurrentTargetDate(targetDate);
+      const newRemaining = Math.max(0, new Date(targetDate).getTime() - Date.now());
+      setTimeLeft(newRemaining);
+      setRedirectReady(newRemaining === 0);
+      setIsFinalMode(newRemaining <= 16 && newRemaining > 0);
+      setFinalSeconds(newRemaining <= 15 && newRemaining > 0 ? Math.ceil(newRemaining / 1000) : null);
+      setShowCurtain(newRemaining <= 15 && newRemaining > 0);
+      setCurtainOpening(newRemaining === 0);
+    }
+  }, [targetDate, currentTargetDate]);
 
   useEffect(() => {
     if (redirectReady) return;
