@@ -6,6 +6,7 @@ import CountdownGuard from "@/components/CountdownGuard";
 import { TARGET_DATE } from "@/lib/countdown";
 import MusicPlayer from "@/components/MusicPlayer";
 import { LoadingProvider } from "@/contexts/LoadingContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const comicRelief = Comic_Relief({
   variable: "--font-comic-relief",
@@ -32,14 +33,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${comicRelief.className} antialiased`}>
-        <LoadingProvider>
-          <ClientLayout>
-            <CountdownGuard targetDate={TARGET_DATE}>
-              <MusicPlayer />
-              {children}
-            </CountdownGuard>
-          </ClientLayout>
-        </LoadingProvider>
+        <ErrorBoundary>
+          <LoadingProvider>
+            <ClientLayout>
+              <CountdownGuard targetDate={TARGET_DATE}>
+                <MusicPlayer />
+                {children}
+              </CountdownGuard>
+            </ClientLayout>
+          </LoadingProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

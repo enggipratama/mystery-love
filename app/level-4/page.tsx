@@ -27,7 +27,7 @@ const createShuffledPieces = (): PuzzlePiece[] => {
     correctPos: i,
   }));
   
-  // Shuffle until we get a non-solved arrangement
+
   let shuffled;
   let attempts = 0;
   do {
@@ -47,7 +47,7 @@ const LevelFour: React.FC = () => {
   const [selectedPiece, setSelectedPiece] = useState<number | null>(null);
   const [isSolved, setIsSolved] = useState(false);
 
-  // Reset state when component mounts (handles navigation back to this page)
+
   useEffect(() => {
     setPieces(createShuffledPieces());
     setIsSolved(false);
@@ -77,7 +77,8 @@ const LevelFour: React.FC = () => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [shufflePuzzle]);
+
+  }, []);
 
   const handlePieceClick = (index: number) => {
     if (isSolved) return;
@@ -93,7 +94,7 @@ const LevelFour: React.FC = () => {
       setPieces(newPieces);
       setSelectedPiece(null);
 
-      // Check if puzzle is solved
+
       const isComplete = newPieces.every((piece, i) => piece.correctPos === i);
       if (isComplete) {
         setTimeout(() => {

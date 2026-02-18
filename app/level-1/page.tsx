@@ -10,7 +10,6 @@ import ShinyText from "@/components/ShinyText";
 import { setLevelCompleted } from "@/utils/progress";
 import { GAME_CONFIG, COLORS } from "@/constants/game";
 
-// Format date to "14 Feb 2026"
 const formatDate = (dateString: string): string => {
   if (!dateString) return "";
   const date = new Date(dateString);

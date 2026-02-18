@@ -19,7 +19,7 @@ declare module "react-pageflip" {
     mobileScrollSupport?: boolean;
     startPage?: number;
 
-    // Props terbaru
+
     clickEventForward?: boolean;
     useMouseEvents?: boolean;
     swipeDistance?: number;

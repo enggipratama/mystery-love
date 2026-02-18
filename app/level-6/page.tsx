@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 import cat from "@/public/cat/melet.json";
@@ -21,31 +21,64 @@ const getRandomWords = (words: string[], count: number) => {
   return [...words].sort(() => Math.random() - 0.5).slice(0, count);
 };
 
+
+const getInitialLetterStates = (word: string) => {
+  const shuffled = shuffle(word);
+  return shuffled.split("").map((letter, index) => ({
+    letter,
+    used: false,
+    originalIndex: index,
+  }));
+};
+
+interface LetterState {
+  letter: string;
+  used: boolean;
+  originalIndex: number;
+}
+
 const LevelSix: React.FC = () => {
   const router = useRouter();
+  
 
-  const [shuffledWords, setShuffledWords] = useState<string[]>(() => 
-    getRandomWords(WORDS, WORD_COUNT)
-  );
+  const [shuffledWords, setShuffledWords] = useState<string[]>(() => getRandomWords(WORDS, WORD_COUNT));
   const [level, setLevel] = useState(0);
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [input, setInput] = useState("");
   const [isWin, setIsWin] = useState(false);
   const [showLosePopup, setShowLosePopup] = useState(false);
   const [shake, setShake] = useState(false);
+  const [letterStates, setLetterStates] = useState<LetterState[]>([]);
+
+  const [isChecking, setIsChecking] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const word = shuffledWords[level] || "";
+
+
+  useEffect(() => {
+    if (word) {
+      setLetterStates(getInitialLetterStates(word));
+      setIsChecking(false);
+      setIsTransitioning(false);
+    }
+  }, [word]);
 
   const resetFullGame = useCallback(() => {
-    setShuffledWords(getRandomWords(WORDS, WORD_COUNT));
+    const newWords = getRandomWords(WORDS, WORD_COUNT);
+    setShuffledWords(newWords);
     setLevel(0);
     setInput("");
     setTimeLeft(TIME_LIMIT);
     setIsWin(false);
     setShowLosePopup(false);
     setShake(false);
+    const firstWord = newWords[0] || "";
+    setLetterStates(firstWord ? getInitialLetterStates(firstWord) : []);
+    setIsChecking(false);
+    setIsTransitioning(false);
   }, []);
 
-  const word = shuffledWords[level] || "";
-  const shuffledWord = useMemo(() => shuffle(word), [word]);
 
   useEffect(() => {
     if (isWin || showLosePopup || !word) return;
@@ -53,7 +86,6 @@ const LevelSix: React.FC = () => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
           setShowLosePopup(true);
           return 0;
         }
@@ -62,17 +94,25 @@ const LevelSix: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isWin, showLosePopup, level, word]);
+  }, [isWin, showLosePopup, word]);
 
   const checkAnswer = useCallback((currentInput: string) => {
+
+    if (isChecking) return;
+    setIsChecking(true);
+
     if (currentInput === word) {
       if (level === shuffledWords.length - 1) {
         setIsWin(true);
+        setIsChecking(false);
       } else {
+        setIsTransitioning(true);
         setTimeout(() => {
           setLevel((prev) => prev + 1);
           setInput("");
           setTimeLeft(TIME_LIMIT);
+          setIsChecking(false);
+          setIsTransitioning(false);
         }, 400);
       }
     } else {
@@ -80,35 +120,71 @@ const LevelSix: React.FC = () => {
       setTimeout(() => {
         setInput("");
         setShake(false);
+        setLetterStates(getInitialLetterStates(word));
+        setIsChecking(false);
       }, 300);
     }
-  }, [word, level, shuffledWords.length]);
+  }, [word, level, shuffledWords.length, isChecking]);
 
-  const handleLetterClick = useCallback((letter: string) => {
-    if (isWin || showLosePopup) return;
+  const handleLetterClick = useCallback((index: number) => {
+  
+    if (isWin || showLosePopup || isTransitioning || isChecking) return;
     if (input.length >= word.length) return;
 
-    const newInput = input + letter;
+    const letterState = letterStates[index];
+    if (!letterState || letterState.used) return;
+
+
+    setLetterStates((prev) =>
+      prev.map((ls, i) => (i === index ? { ...ls, used: true } : ls))
+    );
+
+    const newInput = input + letterState.letter;
     setInput(newInput);
+
 
     if (newInput.length === word.length) {
       setTimeout(() => {
         checkAnswer(newInput);
       }, 100);
     }
-  }, [input, word.length, isWin, showLosePopup, checkAnswer]);
+  }, [input, word.length, letterStates, isWin, showLosePopup, isTransitioning, isChecking, checkAnswer]);
 
+  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isWin || showLosePopup) return;
+      if (isWin || showLosePopup || isTransitioning || isChecking) return;
       
       const letter = e.key.toUpperCase();
-      if (shuffledWord.includes(letter)) {
-        handleLetterClick(letter);
+      
+
+      const availableIndex = letterStates.findIndex(
+        (ls) => ls.letter === letter && !ls.used
+      );
+      
+      if (availableIndex !== -1) {
+        handleLetterClick(availableIndex);
       }
+      
       if (e.key === "Backspace") {
+        if (input.length === 0) return;
+
+        const lastInputLetter = input[input.length - 1];
+        
+          setLetterStates((prev) => {
+          const newStates = [...prev];
+          for (let i = newStates.length - 1; i >= 0; i--) {
+            if (newStates[i].letter === lastInputLetter && newStates[i].used) {
+              newStates[i] = { ...newStates[i], used: false };
+              break;
+            }
+          }
+          return newStates;
+        });
+
         setInput((prev) => prev.slice(0, -1));
       }
+      
       if (e.key === "r" || e.key === "R") {
         resetFullGame();
       }
@@ -116,15 +192,47 @@ const LevelSix: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [shuffledWord, handleLetterClick, isWin, showLosePopup, resetFullGame]);
+  }, [letterStates, handleLetterClick, isWin, showLosePopup, isTransitioning, isChecking, resetFullGame, input]);
 
   const handleRemove = (index: number) => {
+    if (isTransitioning || isChecking) return;
+    
+    const letterToRemove = input[index];
+    if (!letterToRemove) return;
+
+    setLetterStates((prev) => {
+      const newStates = [...prev];
+      let countToSkip = 0;
+      
+
+      for (let i = 0; i < index; i++) {
+        if (input[i] === letterToRemove) countToSkip++;
+      }
+      
+
+      let foundCount = 0;
+      for (let i = 0; i < newStates.length; i++) {
+        if (newStates[i].letter === letterToRemove && newStates[i].used) {
+          if (foundCount === countToSkip) {
+            newStates[i] = { ...newStates[i], used: false };
+            break;
+          }
+          foundCount++;
+        }
+      }
+      return newStates;
+    });
+
     setInput((prev) => prev.slice(0, index) + prev.slice(index + 1));
   };
 
   const resetAnswerOnly = () => {
+    if (isTransitioning || isChecking) return;
+    
     setInput("");
     setShake(false);
+    setLetterStates(getInitialLetterStates(word));
+    setIsChecking(false);
   };
 
   const handleSuccess = () => {
@@ -133,6 +241,7 @@ const LevelSix: React.FC = () => {
   };
 
   const progressPercent = (timeLeft / TIME_LIMIT) * 100;
+  const isBlocked = isTransitioning || isChecking;
 
   return (
     <ProtectedLevel level={6}>
@@ -192,11 +301,12 @@ const LevelSix: React.FC = () => {
             <button
               key={i}
               onClick={() => handleRemove(i)}
+              disabled={isBlocked}
               className={`w-9 h-9 rounded-lg border-2 flex items-center justify-center text-base font-bold ${
                 input[i]
                   ? "bg-green-200 border-green-400"
                   : "bg-white border-pink-300"
-              }`}
+              } ${isBlocked ? "opacity-50 cursor-not-allowed" : ""}`}
               aria-label={`Remove letter ${i + 1}`}
             >
               {input[i] || ""}
@@ -205,14 +315,21 @@ const LevelSix: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 justify-center bg-white/40 p-3 rounded-2xl shadow-2xl mb-3 max-w-[280px]">
-          {shuffledWord.split("").map((letter, index) => (
+          {letterStates.map((letterState, index) => (
             <button
               key={index}
-              onClick={() => handleLetterClick(letter)}
-              className="w-10 h-10 bg-pink-200 hover:bg-pink-300 rounded-lg font-bold text-base shadow-md"
-              aria-label={`Letter ${letter}`}
+              onClick={() => handleLetterClick(index)}
+              disabled={letterState.used || isBlocked}
+              className={`w-10 h-10 rounded-lg font-bold text-base shadow-md transition-all ${
+                letterState.used
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : isBlocked
+                    ? "bg-pink-100 text-pink-300 cursor-not-allowed"
+                    : "bg-pink-200 hover:bg-pink-300 text-gray-800"
+              }`}
+              aria-label={`Letter ${letterState.letter}${letterState.used ? " (used)" : ""}`}
             >
-              {letter}
+              {letterState.letter}
             </button>
           ))}
         </div>
@@ -220,7 +337,12 @@ const LevelSix: React.FC = () => {
         <div className="flex gap-3">
           <button
             onClick={isWin ? resetFullGame : resetAnswerOnly}
-            className="px-4 py-2 text-xs font-bold bg-pink-400 hover:bg-pink-500 text-white rounded-xl"
+            disabled={isBlocked}
+            className={`px-4 py-2 text-xs font-bold text-white rounded-xl ${
+              isBlocked
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-pink-400 hover:bg-pink-500"
+            }`}
           >
             {isWin ? "Play Again" : "Reset Jawaban (R)"}
           </button>

@@ -77,7 +77,7 @@ export default function GameContainer({
             color: #f9a8d4;
             font-weight: 400;
           }
-          /* Hide date input placeholder text */
+
           input[type="date"] {
             color: transparent !important;
             -webkit-text-fill-color: transparent !important;

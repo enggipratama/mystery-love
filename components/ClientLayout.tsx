@@ -11,7 +11,7 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
   const { setIsLoading } = useLoading();
-  const timersRef = useRef<NodeJS.Timeout[]>([]);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     timersRef.current.forEach(t => clearTimeout(t));

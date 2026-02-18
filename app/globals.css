@@ -40,7 +40,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .main-container {
-  min-height: 100dvh; /* Dynamic Viewport Height */
+  min-height: 100dvh;
   background: linear-gradient(to bottom, #fbcce1, #f8a5c2);
   display: flex;
   flex-direction: column;
@@ -134,4 +134,81 @@ body {
 
 .animate-shake {
   animation: shake 0.3s ease-in-out;
+}
+
+.level-page {
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fbcce1;
+  position: relative;
+  overflow: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.level-page-scroll {
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fbcce1;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.game-card {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  padding: 0.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: #ec4899;
+  color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #db2777;
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: #f472b6;
+  color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #ec4899;
+}
+
+.btn-secondary:active {
+  transform: scale(0.95);
 }

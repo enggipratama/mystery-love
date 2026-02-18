@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 
@@ -21,8 +21,14 @@ export default function CountdownGuard({
   const router = useRouter();
   const pathname = usePathname();
 
-  const getRemaining = () =>
-    Math.max(0, new Date(targetDate).getTime() - Date.now());
+  const getRemaining = useCallback(() => {
+    const targetTime = new Date(targetDate).getTime();
+    if (isNaN(targetTime)) {
+      console.error("Invalid target date:", targetDate);
+      return 0;
+    }
+    return Math.max(0, targetTime - Date.now());
+  }, [targetDate]);
 
   const [timeLeft, setTimeLeft] = useState(getRemaining);
   const [redirectReady, setRedirectReady] = useState(getRemaining() === 0);
@@ -37,21 +43,16 @@ export default function CountdownGuard({
     getRemaining() <= 15 && getRemaining() > 0,
   );
   const [curtainOpening, setCurtainOpening] = useState(false);
-  const [currentTargetDate, setCurrentTargetDate] = useState(targetDate);
 
-  // Monitor target date changes and reset state
   useEffect(() => {
-    if (targetDate !== currentTargetDate) {
-      setCurrentTargetDate(targetDate);
-      const newRemaining = Math.max(0, new Date(targetDate).getTime() - Date.now());
-      setTimeLeft(newRemaining);
-      setRedirectReady(newRemaining === 0);
-      setIsFinalMode(newRemaining <= 16 && newRemaining > 0);
-      setFinalSeconds(newRemaining <= 15 && newRemaining > 0 ? Math.ceil(newRemaining / 1000) : null);
-      setShowCurtain(newRemaining <= 15 && newRemaining > 0);
-      setCurtainOpening(newRemaining === 0);
-    }
-  }, [targetDate, currentTargetDate]);
+    const newRemaining = getRemaining();
+    setTimeLeft(newRemaining);
+    setRedirectReady(newRemaining === 0);
+    setIsFinalMode(newRemaining <= 16 && newRemaining > 0);
+    setFinalSeconds(newRemaining <= 15 && newRemaining > 0 ? Math.ceil(newRemaining / 1000) : null);
+    setShowCurtain(newRemaining <= 15 && newRemaining > 0);
+    setCurtainOpening(newRemaining === 0);
+  }, [getRemaining, targetDate]);
 
   useEffect(() => {
     if (redirectReady) return;
@@ -80,7 +81,6 @@ export default function CountdownGuard({
 
         setTimeout(() => {
           setRedirectReady(true);
-          // Emit event when countdown finishes to trigger music autoplay
           window.dispatchEvent(new CustomEvent('countdownFinished'));
         }, 1600);
       }
@@ -96,6 +96,9 @@ export default function CountdownGuard({
   }, [blockAccess, redirectReady, pathname, router]);
 
   const formatTime = (ms: number) => {
+    if (isNaN(ms) || ms < 0) {
+      return "Loading...";
+    }
     const days = Math.floor(ms / (1000 * 60 * 60 * 24));
     const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
@@ -103,12 +106,17 @@ export default function CountdownGuard({
     return `${days}D ${hours}H ${minutes}m ${seconds}s`;
   };
 
-  const getDateText = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("id-ID", {
+  const getDateText = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Tanggal tidak valid";
+    }
+    return date.toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
     });
+  };
 
   if (blockAccess && !redirectReady) {
     return (

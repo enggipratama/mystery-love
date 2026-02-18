@@ -103,7 +103,7 @@ const LevelTwo: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cards.length, handleCardClick, initializeGame]);
+  }, [cards, cards.length, handleCardClick, initializeGame]);
 
   const handleSuccess = () => {
     setLevelCompleted(2);
