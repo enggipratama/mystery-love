@@ -149,7 +149,7 @@ export default function LevelOne() {
                     Kapan kita jadian?
                   </h2>
                   <p className="text-xs text-pink-500 font-medium">
-                    Hayoo inget gak? 🧐
+                    Hayoo inget gak?? 🧐
                   </p>
                 </div>
 
